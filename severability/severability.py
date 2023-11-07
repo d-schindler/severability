@@ -86,6 +86,7 @@ def transition_matrix(adj):
 
     returns a transition matrix: an n x n matrix P where P = diag(A)^-1 * A"""
     diag = np.sum(adj, 1)
+    diag = np.reshape(diag, (-1,1)) # necessary to get right stochastic matrix
     trans_mat = adj / diag
     return trans_mat
 
@@ -104,6 +105,7 @@ def mixing(P_C_power):
     a random walker in C
     """
     diag = np.sum(P_C_power, 1)
+    diag = np.reshape(diag, (-1,1)) # necessary to get right stochastic matrix
     norm_mat = P_C_power / diag
 
     quasi_dist = np.average(norm_mat, 0)
@@ -153,7 +155,7 @@ def component_cover(P, t, max_size=50):
     ans = []
     potential_orphans = set()
     while len(remaining_nodes) > 0:
-        n = random.sample(remaining_nodes, 1)[0]
+        n = random.sample(list(remaining_nodes), 1)[0] # necessary for python 3.11
         C, sev = component_optimise(P, [n], t, max_size)
         if len(remaining_nodes.intersection(C)) > 0:
             ans.append((C, sev))
@@ -165,7 +167,7 @@ def component_cover(P, t, max_size=50):
     # tries to keep the starting node in the community.
     orphans = set()
     while len(potential_orphans) > 0:
-        n = random.sample(potential_orphans, 1)[0]
+        n = random.sample(list(potential_orphans), 1)[0] # necessary for python 3.11
         C, sev = node_component(P, n, t, max_size)
         if len(potential_orphans.intersection(C)) > 0:
             ans.append((C, sev))
